@@ -5,6 +5,8 @@ import argparse
 
 class Detective:
     def __init__(self):
+        self.hidden_pages = []
+
         self.headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
             "AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -17,76 +19,28 @@ class Detective:
             "Upgrade-Insecure-Requests": "1"
         }
 
-        self.hidden_pages = [
-            # Root dizin
-            "/admin",
-            "/administrator",
-            "/admin-panel",
-            "/wp-admin",
-            "/cms",
-            "/manager",
-            "/login",
-            "/signin",
-            "/user/login",
-            "/account/login",
-            "/auth",
-            "/cpanel",
-            "/controlpanel",
-            "/dashboard",
-            "/system",
-            "/console",
-            "/backup",
-            "/backups",
-            "/db",
-            "/database",
-            "/dump",
-            "/test",
-            "/dev",
-            "/staging",
-            "/sandbox",
-            "/beta",
-            "/config",
-            "/settings",
-            "/setup",
-            "/install",
-            "/phpmyadmin",
-            # Alt dizin varyasyonları
-            "/admin/login",
-            "/admin/dashboard",
-            "/admin/control",
-            "/cms/admin",
-            "/cms/login",
-            "/user/admin",
-            "/user/dashboard",
-            "/account/admin",
-            "/dev/admin",
-            "/dev/login",
-            "/staging/admin",
-            "/staging/login",
-            "/backup/admin",
-            "/backup/database",
-            "/system/admin",
-            "/config/setup",
-            "/settings/admin",
-            "/install/setup",
-            "/manager/login",
-            "/manager/dashboard"
-        ]
-
     def search(self):
         parser = argparse.ArgumentParser(description="Web page detective by paradass",add_help=False)
         parser.add_argument("-t","--target",type=str,required=True)
+        parser.add_argument("-w","--wordlist",type=str,required=False,default="wordlist.txt")
         args = parser.parse_args()
         target = args.target
-
+        wl = args.wordlist
+        
         if target[-1] == "/":
             target = target[0:len(target)-1]
 
-        print("\033[31mSearching..\033[0m")
-
-        for page in self.hidden_pages:
+        try:
+            file = open(wl,"r")
+            print("\033[31mSearching..\033[0m")
+        except:
+            print("\033[31mWordlist file error!\033[0m")
+            return
+    
+        for page in file.readlines():
             try:
                 time.sleep(0.5)
+                page = page.replace("\n","")
                 for i in range(2):
                     if i == 1:
                         page += "/"
